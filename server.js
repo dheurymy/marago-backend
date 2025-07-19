@@ -43,8 +43,16 @@ app.use((req, res, next) => {
 
 // Conexão com MongoDB
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('✅ Conectado ao MongoDB'))
-  .catch(err => console.error('❌ Erro ao conectar ao MongoDB:', err.message));
+    .then(() => {
+        console.log('✅ Conectado ao MongoDB');
+
+        app.listen(PORT, () => {
+            console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('❌ Erro ao conectar ao MongoDB:', err.message);
+    });
 
 // Rota de teste
 app.get('/', (req, res) => {
@@ -52,7 +60,7 @@ app.get('/', (req, res) => {
 });
 
 // Rotas de autenticação com Google 
-const authRoutes = require('./routes/authRoutes'); 
+const authRoutes = require('./routes/authRoutes');
 app.use('/auth', authRoutes);
 
 // Rotas de upload de imagens
@@ -67,7 +75,3 @@ app.use('/usuarios', usuarioRoutes);
 const pontosRoutes = require('./routes/pontosRoutes');
 app.use('/pontos', pontosRoutes);
 
-// Inicializa o servidor
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT}`);
-});
