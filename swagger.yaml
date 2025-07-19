@@ -4,7 +4,7 @@ info:
   description: API para gerenciamento de pontos turísticos, usuários e autenticação via Google.
   version: 1.0.0
 servers:
-  - url: http://localhost:5000
+  - url: https://marago-backend.vercel.app/
 paths:
   /auth/google:
     get:
