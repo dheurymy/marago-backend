@@ -1,0 +1,256 @@
+openapi: 3.0.0
+info:
+  title: MaraGO API
+  description: API para gerenciamento de pontos turísticos, usuários e autenticação via Google.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /auth/google:
+    get:
+      summary: Inicia autenticação via Google
+      responses:
+        '302':
+          description: Redireciona para login do Google
+
+  /auth/google/callback:
+    get:
+      summary: Callback da autenticação Google
+      responses:
+        '200':
+          description: Retorna usuário e JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                  usuario:
+                    type: object
+                  token:
+                    type: string
+
+  /usuarios:
+    post:
+      summary: Cadastra novo usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, email, senha]
+              properties:
+                nome:
+                  type: string
+                email:
+                  type: string
+                senha:
+                  type: string
+      responses:
+        '201':
+          description: Usuário cadastrado
+        '400':
+          description: Erro de validação
+
+  /usuarios/login:
+    post:
+      summary: Realiza login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, senha]
+              properties:
+                email:
+                  type: string
+                senha:
+                  type: string
+      responses:
+        '200':
+          description: Login bem-sucedido com token
+        '401':
+          description: Credenciais inválidas
+
+  /usuarios/{id}/preferencias:
+    put:
+      summary: Atualiza preferências do usuário
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preferencias:
+                  type: object
+                  properties:
+                    tipo:
+                      type: array
+                      items: { type: string }
+                    tags:
+                      type: array
+                      items: { type: string }
+                    cidadeFavorita:
+                      type: string
+      responses:
+        '200':
+          description: Preferências atualizadas
+        '403':
+          description: Acesso negado
+
+  /pontos:
+    post:
+      summary: Cria ponto turístico com imagem
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - nome
+                - tipo
+                - cidade
+                - estado
+                - pais
+                - latitude
+                - longitude
+                - imagem
+              properties:
+                nome:
+                  type: string
+                descricao:
+                  type: string
+                tipo:
+                  type: array
+                  items: { type: string }
+                tags:
+                  type: array
+                  items: { type: string }
+                cidade:
+                  type: string
+                estado:
+                  type: string
+                pais:
+                  type: string
+                latitude:
+                  type: string
+                longitude:
+                  type: string
+                imagem:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Ponto criado com imagem
+        '400':
+          description: Dados inválidos
+
+    get:
+      summary: Lista todos os pontos turísticos
+      responses:
+        '200':
+          description: Lista de pontos
+
+  /pontos/filtro:
+    get:
+      summary: Filtra pontos por tipo e tags
+      parameters:
+        - name: tipo
+          in: query
+          schema:
+            type: string
+        - name: tags
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pontos filtrados
+        '404':
+          description: Nenhum ponto encontrado
+
+  /pontos/{id}:
+    get:
+      summary: Busca ponto turístico por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Ponto encontrado
+        '404':
+          description: Não encontrado
+
+    put:
+      summary: Atualiza ponto turístico por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                descricao:
+                  type: string
+                tipo:
+                  type: array
+                  items: { type: string }
+                tags:
+                  type: array
+                  items: { type: string }
+      responses:
+        '200':
+          description: Atualizado com sucesso
+        '404':
+          description: Não encontrado
+
+    delete:
+      summary: Exclui ponto por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Ponto removido
+        '404':
+          description: Não encontrado
+
+  /upload:
+    post:
+      summary: Envia uma imagem para Cloudinary
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [imagem]
+              properties:
+                imagem:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: URL da imagem retornada
+        '400':
+          description: Imagem não enviada
