@@ -91,3 +91,23 @@ exports.atualizarPreferencias = async (req, res) => {
     });
   }
 };
+
+//  Verificar se nome de usuário está disponível
+exports.verificarUsuarioDisponivel = async (req, res) => {
+  try {
+    const { usuario } = req.query;
+
+    if (!usuario || usuario.trim() === '') {
+      return res.status(400).json({ erro: 'Parâmetro "usuario" é obrigatório' });
+    }
+
+    const existe = await Usuario.findOne({ usuario });
+
+    res.json({ disponivel: !existe });
+  } catch (err) {
+    res.status(500).json({
+      erro: 'Erro ao verificar disponibilidade',
+      detalhes: err.message,
+    });
+  }
+};
