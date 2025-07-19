@@ -18,6 +18,6 @@ Bem-vindo à API do **MaraGO** — uma plataforma inteligente de recomendação 
 ## 📦 Instalação
 
 ```bash
-git clone https://github.com/seuusuario/marago-api.git
-cd marago-api
-npm install
+git clone https heurymy/marago-backend.git
+cd marago-backend
+npm install mongoose express jsonwebtoken bcryptjs cloudinary cors dotenv express express-session jsonwebtoken mongodb multer multer-storage-cloudinary passport passport-google-oauth 
